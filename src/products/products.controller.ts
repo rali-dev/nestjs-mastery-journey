@@ -14,6 +14,8 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { JwtAuthGuard } from 'src/jwt-auth/jwt-auth.guard';
 import UserGuard from 'src/users/dto/userGuards';
+import { I18n, I18nContext } from 'nestjs-i18n';
+import { HttpException, HttpStatus } from '@nestjs/common';
 
 @Controller('products')
 export class ProductsController {
@@ -28,7 +30,8 @@ export class ProductsController {
   }
 
   @Get()
-  findAll() {
+  findAll(@I18n() i18n: I18nContext) {
+    throw new HttpException({ message: i18n.t('tr.item_not_found', { args: {item: 'Product' } }) }, HttpStatus.NOT_FOUND);
     return this.productsService.findAll();
   }
 
