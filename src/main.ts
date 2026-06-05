@@ -2,9 +2,18 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
-
+import passport from 'passport';
+import session from 'express-session';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.use(session({
+    secret: 'secret',
+    // resave: false,
+    // saveUninitialized: false,
+  }));
+  app.use(passport.initialize());
+  app.use(passport.session());
+
   app.enableCors();
   app.useGlobalPipes(
     new ValidationPipe({

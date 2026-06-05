@@ -17,6 +17,6 @@ export default class Users {
   @Column({ nullable: true })
   age!: number;
 
-  @Column({ length:100, nullable: false, select: false})
+  @Column({ length: 100, nullable: false, select: false })
   password!: string;
 }
