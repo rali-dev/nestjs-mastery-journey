@@ -1,4 +1,5 @@
 import { IsNotEmpty, IsNumber, IsString, MinLength, IsOptional } from 'class-validator';
+import UserGuard from 'src/users/dto/userGuards';
 
 export class CreateProductDto {
   @IsString()
@@ -13,4 +14,8 @@ export class CreateProductDto {
   @IsNumber()
   @IsOptional()
   readonly price!: number;
+
+  @IsOptional()
+  user!: UserGuard;
+
 }

@@ -7,11 +7,13 @@ import {
   Param,
   Delete,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { JwtAuthGuard } from 'src/jwt-auth/jwt-auth.guard';
+import UserGuard from 'src/users/dto/userGuards';
 
 @Controller('products')
 export class ProductsController {
@@ -19,31 +21,36 @@ export class ProductsController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  create(@Body() createProductDto: CreateProductDto) {
-    console.log(createProductDto.price);
-    if (createProductDto.price > 10000000) {
-      throw new Error('Price is too high');
-    }
-    return { message: 'ok', data: createProductDto };
+  create(@Body() createProductDto: CreateProductDto, @Request() request) {
+    const user: UserGuard = request.user;
+    createProductDto.user = { id: user.id } as UserGuard;
+    return this.productsService.create(createProductDto);
   }
 
   @Get()
   findAll() {
-    return [];
+    return this.productsService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return { id };
+  findOne(@Param('id') id: number) {
+    return this.productsService.findOne(id);
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
-    return { method: 'put', id };
+  @UseGuards(JwtAuthGuard)
+  update(
+    @Param('id') id: number,
+    @Body() updateProductDto: UpdateProductDto,
+    @Request() request,
+  ) {
+    updateProductDto.user = request.user;
+    return this.productsService.update(id, updateProductDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.productsService.remove(+id);
+  @UseGuards(JwtAuthGuard)
+  remove(@Param('id') id: number, @Request() request) {
+    return this.productsService.remove(id, request.user);
   }
 }
